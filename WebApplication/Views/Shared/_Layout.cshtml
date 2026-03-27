@@ -1,0 +1,91 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Entity.Concrete.AppUser> SignInManager
+@inject UserManager<Entity.Concrete.AppUser> UserManager
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Paneli</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" /></head><body>
+
+
+    @* --- MOBİL HAMBURGER BUTONU --- *@
+    <button class="navbar-toggler-custom" id="sidebarToggle" aria-label="Menü">
+        <i class="fa fa-bars"></i>
+    </button>
+
+    <div class="sidebar" id="sidebar">
+        @* --- PROFİL ALANI --- *@
+        <div class="px-4 pt-4 pb-2 text-center">
+            @if (SignInManager.IsSignedIn(User))
+            {
+                var user = await UserManager.GetUserAsync(User);
+                var roles = await UserManager.GetRolesAsync(user);
+                
+                <div class="user-profile-header mb-3">
+                    <i class="fa fa-user-circle fa-3x text-success mb-2"></i>
+                    <h5 class="text-white mb-0 fw-bold">@user?.Name @user?.Surname</h5>
+                    
+                    @foreach (var role in roles)
+                    {
+                        <span class="badge bg-success bg-opacity-10 text-success small border border-success border-opacity-25 mt-1" style="font-size: 0.7rem;">
+                            @role
+                        </span>
+                    }
+                </div>
+            }
+            else
+            {
+                <h4 class="text-white">Admin Paneli</h4>
+            }
+        </div>
+
+        <div class="px-4 mb-3">
+            <div style="border-top: 1px solid rgba(255,255,255,0.1);"></div>
+        </div>
+
+        @* --- MENÜ ALANI --- *@
+        <a asp-controller="Dashboard" asp-action="Index"><i class="fa fa-home me-2"></i> Anasayfa</a>
+        <a asp-controller="Category" asp-action="Index"><i class="fa fa-tags me-2"></i> Kategoriler</a>
+        <a asp-controller="Product" asp-action="Index"><i class="fa fa-box me-2"></i> Ürünler</a>
+        <a asp-controller="Order" asp-action="Index"><i class="fa fa-shopping-cart me-2"></i> Siparişler</a>
+        <a asp-controller="Stock" asp-action="Index"><i class="fa fa-warehouse me-2"></i> Stok Bilgisi</a>
+
+        @* --- ALT ALAN (GÜNCELLENDİ) --- *@
+        <div class="sidebar-footer">
+            <div class="sidebar-divider"></div>
+            
+            @* Tema Değiştirme Butonu *@
+            <a href="javascript:void(0);" id="theme-toggle" class="text-info">
+                <i id="theme-icon" class="fa fa-moon me-2"></i> <span>Karanlık Mod</span>
+            </a>
+
+            <a asp-controller="Account" asp-action="Logout" class="text-danger">
+                <i class="fa fa-sign-out-alt me-2"></i> Çıkış Yap
+            </a>
+        </div>
+    </div>
+
+    @* --- MOBİL OVERLAY (Sidebar açıkken arka plan karartması) --- *@
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="content d-flex flex-column min-vh-100">
+        <main role="main" class="flex-grow-1 pb-3">
+            @RenderBody()
+        </main>
+
+        <footer class="admin-footer text-center py-3 mt-auto">
+            <div class="container-fluid">
+                <span class="text-muted small">
+                    &copy; 2026 - <b>Ürün Takip Sistemi</b> | Tüm Hakları Saklıdır.
+                </span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)</body></html>
+

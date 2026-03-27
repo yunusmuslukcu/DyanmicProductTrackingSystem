@@ -1,0 +1,106 @@
+﻿@model Entity.Concrete.Order
+
+@{
+    ViewData["Title"] = "Sipariş Güncelleme";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm border-0 mt-4">
+                @* Header: Koyu tema ve düzenleme ikonu *@
+                <div class="card-header text-white d-flex align-items-center" style="background-color: #212529;">
+                    <i class="fas fa-edit me-2"></i>
+                    <h5 class="mb-0 py-2"> Sipariş Bilgilerini Güncelle</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="Update" method="post">
+                        @* MongoDB ID bilgisini gizli tutuyoruz *@
+                        <input type="hidden" asp-for="OrderID" />
+                        @* Sipariş tarihini korumak için gizli tutuyoruz *@
+                        <input type="hidden" asp-for="OrderDate" />
+
+                        <div class="row">
+                            @* Müşteri Adı *@
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label fw-bold text-dark">
+                                    <i class="fas fa-user me-1"></i> Müşteri Adı / Ünvanı
+                                </label>
+                                <input type="text" asp-for="CustomerName" class="form-control border-2 shadow-none" required />
+                            </div>
+
+                            @* Ürün Seçimi *@
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold text-primary">
+                                    <i class="fas fa-box me-1"></i> Satılan Ürün
+                                </label>
+                                <select asp-for="ProductId" id="productSelect" class="form-select border-2 border-primary shadow-none"
+                                        asp-items="@ViewBag.ProductList" required>
+                                    <option value="">--- Ürün Seçiniz ---</option>
+                                </select>
+                            </div>
+
+                            @* Satış Adedi *@
+                            <div class="col-md-3 mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-sort-numeric-up me-1"></i> Adet
+                                </label>
+                                <input type="number" id="quantityInput" asp-for="Quantity" class="form-control border-2 shadow-none"
+                                       required min="1" />
+                            </div>
+
+                            @* Toplam Tutar *@
+                            <div class="col-md-3 mb-4">
+                                <label class="form-label fw-bold text-success">
+                                    <i class="fas fa-lira-sign me-1"></i> Toplam Tutar
+                                </label>
+                                <input type="number" step="0.01" id="totalPriceInput" asp-for="TotalPrice" class="form-control border-2 border-success shadow-none"
+                                       required />
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        @* Alt Butonlar - Tam Bütünlük *@
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill text-decoration-none">
+                                <i class="fas fa-arrow-left me-1"></i> Vazgeç
+                            </a>
+                            <button type="submit" class="btn btn-primary px-5 rounded-pill shadow">
+                                <i class="fas fa-save me-1"></i> Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Ürün fiyatlarını Controller'dan gelen listeden JS sözlüğüne döküyoruz
+        const productPrices = {
+            @foreach (var p in (List<Entity.Concrete.Product>)ViewBag.Products)
+            {
+                    @: "@p.ProductID": @p.Price.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            }
+        };
+
+        $(document).ready(function () {
+            function updateTotalPrice() {
+                const selectedId = $("#productSelect").val();
+                const quantity = parseInt($("#quantityInput").val()) || 0;
+                const unitPrice = productPrices[selectedId] || 0;
+
+                const total = unitPrice * quantity;
+                $("#totalPriceInput").val(total.toFixed(2));
+            }
+
+            // Ürün veya adet değiştiğinde anında hesapla
+            $("#productSelect, #quantityInput").on("change input", updateTotalPrice);
+        });
+    </script>
+}

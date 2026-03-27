@@ -1,0 +1,125 @@
+﻿@model Entity.Concrete.Product
+
+@{
+    ViewData["Title"] = "Ürün Güncelleme";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            @* Genişlik Create sayfasıyla eşitlendi *@
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-header text-white d-flex align-items-center" style="background-color: #212529;">
+                    <i class="fas fa-edit me-2"></i>
+                    <h5 class="mb-0 py-2"> Ürün Güncelleme Sayfası</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Update" method="post">
+                        @* Kayıt işlemi için ID bilgisini saklıyoruz *@
+                        <input type="hidden" asp-for="ProductID" />
+
+                        <div class="row">
+                            @* Ürün Adı *@
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold"><i class="fas fa-tag me-1"></i> Ürün Adı</label>
+                                <input type="text" asp-for="ProductName" class="form-control border-2 shadow-none" placeholder="Ürün adını giriniz..." />
+                            </div>
+
+                            @* Marka *@
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold"><i class="fas fa-copyright me-1"></i> Marka</label>
+                                <input type="text" asp-for="Brand" class="form-control border-2 shadow-none" placeholder="Marka giriniz..." />
+                            </div>
+
+                            @* Fiyat *@
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold"><i class="fas fa-lira-sign me-1"></i> Fiyat (₺)</label>
+                                <input type="text" asp-for="Price" class="form-control border-2 shadow-none" placeholder="0,00" />
+                            </div>
+
+                            @* Kategori *@
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold text-primary"><i class="fas fa-list me-1"></i> Kategori Seçiniz</label>
+                                <select asp-for="CategoryID" class="form-select border-2 border-primary shadow-none" asp-items="ViewBag.CategoryList" id="categorySelect">
+                                    <option value="">-- Kategori Seçiniz --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        @* Dinamik Özellikler Alanı *@
+                        <div id="attributeArea" class="mt-4 p-3 border rounded-3 bg-light mx-1" style="display:none;">
+                            <h6 class="fw-bold mb-3 text-secondary"><i class="fas fa-th-list me-1"></i> Özellikleri Güncelle</h6>
+                            <div id="dynamicInputs" class="row">
+                                @* JavaScript burayı dolduracak *@
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill text-decoration-none">
+                                <i class="fas fa-arrow-left me-1"></i> Vazgeç
+                            </a>
+                            <button type="submit" class="btn btn-primary px-5 shadow rounded-pill">
+                                <i class="fas fa-save me-1"></i> Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+        // Kategori seçimi değiştiğinde çalışır
+        $('#categorySelect').on('change', function () {
+        var categoryId = $(this).val();
+        var dynamicArea = $('#dynamicInputs');
+        var attributeWrapper = $('#attributeArea');
+
+        if (categoryId) {
+        $.ajax({
+        url: '/Category/GetCategoryAttributes/' + categoryId,
+        type: 'GET',
+        success: function (data) {
+        dynamicArea.empty();
+        if (data && data.length > 0) {
+        attributeWrapper.show();
+        data.forEach(function (attrName) {
+        var html = `
+        <div class="col-md-6 mb-3 animate__animated animate__fadeIn">
+        <label class="form-label text-muted small fw-bold">${attrName}</label>
+        <input type="text"
+        name="DynamicAttributes[${attrName}]"
+        class="form-control border-2 shadow-none"
+        placeholder="${attrName} değerini giriniz..." />
+        </div>`;
+        dynamicArea.append(html);
+        });
+        } else {
+        attributeWrapper.hide();
+        }
+        },
+        error: function () {
+        console.error("Özellikler yüklenirken hata oluştu!");
+        }
+        });
+        } else {
+        attributeWrapper.hide();
+        }
+        });
+
+        // Sayfa açıldığında mevcut kategori seçiliyse özellikleri tetikle
+        if ($('#categorySelect').val()) {
+        $('#categorySelect').trigger('change');
+        }
+        });
+    </script>
+}

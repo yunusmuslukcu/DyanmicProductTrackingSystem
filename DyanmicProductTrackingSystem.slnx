@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Business/">
+    <Project Path="Business/Business.csproj" />
+  </Folder>
+  <Folder Name="/DataAccess/">
+    <Project Path="DataAccess/DataAccess.csproj" />
+  </Folder>
+  <Folder Name="/Entity/">
+    <Project Path="Entity/Entity.csproj" />
+  </Folder>
+  <Folder Name="/WebUI/">
+    <Project Path="WebApplication/WebApplication.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,64 @@
+﻿@model Entity.Concrete.Stock
+
+@{
+    ViewData["Title"] = "Stok Güncelleme";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            @* Kart boyutunu 2. resimdeki gibi daha toplu hale getirdik *@
+            <div class="card shadow-sm border-0 mt-4">
+                @* Header: 2. Resimdeki gibi Koyu Gri/Siyah tema *@
+                <div class="card-header text-white d-flex align-items-center" style="background-color: #212529;">
+                    <i class="fas fa-edit me-2"></i>
+                    <h5 class="mb-0 py-1"> Stok Bilgilerini Güncelle</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="Update" method="post">
+                        @* MongoDB ID bilgisini gizli tutuyoruz *@
+                        <input type="hidden" asp-for="StockID" />
+
+                        @* Stoklanan Ürün *@
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="fas fa-shopping-cart me-1"></i> Stoklanan Ürün</label>
+                            <select asp-for="ProductId" class="form-select border-2 shadow-none"
+                                    asp-items="@ViewBag.ProductList" required>
+                                <option value="">--- Ürün Seçiniz ---</option>
+                            </select>
+                        </div>
+
+                        @* Güncel Stok Adedi *@
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="fas fa-layer-group me-1"></i> Güncel Stok Adedi</label>
+                            <input type="number" asp-for="Quantity" class="form-control border-2 shadow-none"
+                                   placeholder="100" required min="0" />
+                        </div>
+
+                        @* Kritik Seviye *@
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-danger"><i class="fas fa-exclamation-triangle me-1"></i> Kritik Seviye Uyarısı</label>
+                            <input type="number" asp-for="CriticalLevel" class="form-control border-2 border-danger shadow-none"
+                                   placeholder="10" required min="1" />
+                            <p class="text-muted small mt-1">Bu değerin altına düşüldüğünde listede uyarı yanacaktır.</p>
+                        </div>
+
+                        <hr class="my-4" />
+
+                     
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill text-decoration-none">
+                                <i class="fas fa-arrow-left me-1"></i> Vazgeç
+                            </a>
+                            <button type="submit" class="btn btn-primary px-5 rounded-pill shadow">
+                                <i class="fas fa-save me-1"></i> Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

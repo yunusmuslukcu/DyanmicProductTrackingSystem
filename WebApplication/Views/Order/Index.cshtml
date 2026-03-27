@@ -1,0 +1,191 @@
+﻿@model List<Entity.Concrete.Order>
+
+@{
+    ViewData["Title"] = "Sipariş Listesi";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div class="card shadow-sm border-0 mt-4">
+                @* Header: Arama ve Ekleme Butonları Aynı Çizgide *@
+                <div class="card-header bg-dark text-white">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <h5 class="mb-0 py-1"><i class="fas fa-shopping-cart me-2"></i> Sipariş Takip</h5>
+                        
+                        @* Arama ve Ekleme Grubu *@
+                        <div class="d-flex align-items-center gap-2">
+                            @* Müşteri Adına Göre Arama Formu *@
+                            <form asp-action="Index" method="get" class="d-flex align-items-center">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" name="searchText" value="@ViewBag.SearchText"
+                                           class="form-control border-0 shadow-none rounded-start-pill px-3"
+                                           placeholder="Müşteri ara..." style="width: 200px;">
+                                    <button type="submit" class="btn btn-light btn-sm rounded-end-pill px-3">
+                                        <i class="fas fa-search text-dark"></i>
+                                    </button>
+                                </div>
+                                @if (!string.IsNullOrEmpty(ViewBag.SearchText))
+                                {
+                                    <a asp-action="Index" class="btn btn-sm btn-outline-light border-0 rounded-circle ms-1" title="Aramayı Temizle">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                }
+                            </form>
+
+                            @* Yeni Sipariş Oluştur *@
+                            <a asp-action="Create" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm">
+                                <i class="fas fa-plus-circle me-1"></i> Yeni Sipariş Oluştur
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Müşteri</th>
+                                    <th>Ürün & Özellikler</th>
+                                    <th>Adet</th>
+                                    <th>Toplam Tutar</th>
+                                    <th>Tarih</th>
+                                    <th class="text-center">İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Any())
+                                {
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            @* Müşteri Adı *@
+                                            <td class="ps-4">
+                                                <div class="fw-bold text-dark">@item.CustomerName</div>
+                                            </td>
+                                            <td>
+                                                @{
+                                                    var productList = ViewBag.Products as List<Entity.Concrete.Product>;
+                                                    var product = productList?.FirstOrDefault(x => x.ProductID == item.ProductId);
+                                                }
+                                                <div class="d-flex flex-column">
+                                                    <span class="badge bg-light text-primary border fw-bold mb-1" style="width: fit-content;">
+                                                        <i class="fas fa-box me-1"></i> @(product?.ProductName ?? "Bilinmeyen Ürün")
+                                                    </span>
+                                                    
+                                                    @if (product?.DynamicAttributes != null && product.DynamicAttributes.Any())
+                                                    {
+                                                        <div class="d-flex flex-wrap gap-1">
+                                                            @foreach (var attr in product.DynamicAttributes)
+                                                            {
+                                                                <span class="badge bg-secondary bg-opacity-10 text-muted border-0 fw-normal" style="font-size: 0.7rem; padding: 0.4em 0.7em;">
+                                                                    <i class="fas fa-info-circle me-1" style="font-size: 0.6rem;"></i>
+                                                                    <strong>@attr.Key:</strong> @attr.Value
+                                                                </span>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </td>
+
+                                            @* Adet *@
+                                            <td>
+                                                <span class="fw-bold">@item.Quantity Adet</span>
+                                            </td>
+
+                                            @* Toplam Tutar *@
+                                            <td>
+                                                <span class="text-success fw-bold" style="font-size: 1.1rem;">
+                                                    @item.TotalPrice.ToString("C2")
+                                                </span>
+                                            </td>
+
+                                            @* Tarih *@
+                                            <td>
+                                                <div class="text-muted small">
+                                                    <i class="far fa-calendar-alt me-1"></i> @item.OrderDate.ToString("dd.MM.yyyy")
+                                                </div>
+                                                <div class="text-muted" style="font-size: 0.75rem;">
+                                                    <i class="far fa-clock me-1"></i> @item.OrderDate.ToString("HH:mm")
+                                                </div>
+                                            </td>
+
+                                            @* İşlemler *@
+                                            <td class="text-center">
+                                                <a asp-action="Update" asp-route-id="@item.OrderID"
+                                                       class="btn btn-warning btn-sm rounded-pill px-3 fw-bold shadow-sm me-1" style="color: #212529;">
+                                                    <i class="fas fa-edit me-1"></i> Güncelle
+                                                </a>
+                                                @if (User.IsInRole("Admin"))
+                                                {
+                                                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm"
+                                                            onclick="deleteOrder('@item.OrderID', '@item.CustomerName')">
+                                                        <i class="fas fa-trash me-1"></i> Sil
+                                                    </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5 text-muted">
+                                            <i class="fas fa-search-minus fa-3x mb-3 d-block opacity-25"></i>
+                                            Aradığınız kriterlere uygun sipariş bulunamadı.
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+        transition: 0.3s;
+    }
+
+    .btn:active {
+        transform: scale(0.95);
+    }
+
+    .badge {
+        letter-spacing: 0.3px;
+    }
+
+    .input-group .form-control:focus {
+        width: 250px !important;
+        transition: all 0.3s ease;
+        background-color: white !important;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function deleteOrder(id, customer) {
+        Swal.fire({
+        title: 'Siparişi Sil?',
+        text: customer + " isimli müşterinin siparişi kalıcı olarak silinecektir!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Evet, Sil!',
+        cancelButtonText: 'Vazgeç'
+        }).then((result) => {
+        if (result.isConfirmed) {
+        window.location.href = "/Order/Delete/" + id;
+        }
+        })
+        }
+    </script>
+}

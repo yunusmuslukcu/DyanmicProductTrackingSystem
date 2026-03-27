@@ -1,0 +1,189 @@
+/* 1. TEMA DEĞİŞKENLERİ (En tepeye ekle) */
+
+:root {
+    /* Aydınlık Tema (Default) */
+    --bg-color: #f4f7f6;
+    --text-color: #333333;
+    --sidebar-bg: #212529;
+    --sidebar-text: #adb5bd;
+    --sidebar-hover: #343a40;
+    --card-bg: #ffffff;
+    --footer-bg: #212529;
+    --border-color: #343a40;
+}
+
+[data-theme="dark"] {
+    /* Karanlık Tema */
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --sidebar-bg: #000000;
+    --sidebar-text: #999999;
+    --sidebar-hover: #1a1a1a;
+    --card-bg: #1e1e1e;
+    --footer-bg: #000000;
+    --border-color: #222222;
+}
+/* 2. GENEL AYARLAR */
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s; /* Geçişler yumuşak olsun */
+}
+/* 3. SİDEBAR (Güncellendi) */
+
+.sidebar {
+    height: 100vh;
+    width: 280px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: var(--sidebar-bg); /* Değişken kullanıldı */
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+    z-index: 1000;
+    transition: background-color 0.3s;
+}
+
+    .sidebar a {
+        padding: 12px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        color: var(--sidebar-text); /* Değişken kullanıldı */
+        display: block;
+        transition: 0.3s;
+    }
+
+        .sidebar a:hover {
+            color: #ffffff;
+            background-color: var(--sidebar-hover); /* Değişken kullanıldı */
+        }
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-bottom: 20px;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background-color: var(--border-color); /* Değişken kullanıldı */
+    margin: 10px 20px;
+}
+/* 4. CONTENT & FOOTER (Güncellendi) */
+
+.content {
+    margin-left: 280px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 0;
+    background-color: var(--bg-color);
+}
+
+main {
+    padding: 20px;
+    flex: 1;
+    padding-bottom: 70px;
+}
+
+.admin-footer {
+    background-color: var(--footer-bg); /* Değişken kullanıldı */
+    color: var(--sidebar-text);
+    padding: 15px 0;
+    width: 100%;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+/* 5. RESPONSİVE - MOBİL UYUM */
+
+/* Hamburger butonu normalde gizli */
+.navbar-toggler-custom {
+    display: none;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 1100;
+    background-color: var(--sidebar-bg);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* Sidebar üstüne tıklandığında kapatan overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+}
+
+@media (max-width: 768px) {
+
+    /* Hamburger görünür yap */
+    .navbar-toggler-custom {
+        display: block;
+    }
+
+    /* Sidebar varsayılan olarak ekran dışında */
+    .sidebar {
+        left: -280px;
+        transition: left 0.3s ease;
+        z-index: 1050;
+    }
+
+    /* Sidebar açık hali */
+    .sidebar.open {
+        left: 0;
+    }
+
+    /* Sidebar açıkken overlay görünür */
+    .sidebar.open ~ .sidebar-overlay {
+        display: block;
+    }
+
+    /* Content margin sıfırla, tam genişlik */
+    .content {
+        margin-left: 0;
+    }
+
+    /* Main padding üstte hamburger buton için boşluk bırak */
+    main {
+        padding: 70px 12px 70px 12px;
+    }
+
+    /* Dashboard istatistik kartları mobilde tam genişlik */
+    .col-xl-3,
+    .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Dashboard alt satır kartları */
+    .col-xl-8,
+    .col-xl-4,
+    .col-lg-7,
+    .col-lg-5 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Tablo mobilde yatay kaydırmalı */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    /* Dashboard başlık satırı mobilde dikey */
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 8px;
+    }
+}

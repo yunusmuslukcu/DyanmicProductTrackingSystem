@@ -1,0 +1,100 @@
+﻿@model Entity.Concrete.Category
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header text-white" style="background-color: #212529;">
+                    <h5 class="mb-0 py-2"><i class="fa fa-edit me-2"></i> Kategori Güncelleme Sayfası</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="post">
+                        @* ID ve Icon alanlarını saklıyoruz *@
+                        <input type="hidden" asp-for="CategoryID" />
+                        <input type="hidden" asp-for="CategoryIcon" />
+
+                        <div class="form-group mb-4">
+                            <label class="fw-bold mb-2 text-dark"><i class="fa fa-pencil-alt me-1"></i> Kategori Adı</label>
+                            <input type="text" asp-for="CategoryName" class="form-control form-control-lg border-2 shadow-none" placeholder="Kategori ismini güncelleyin..." required />
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="fw-bold mb-2 text-dark">
+                                <i class="fa fa-th-list me-1"></i> Özellikleri Güncelle
+                            </label>
+
+                            <div id="attributeContainer">
+                                @if (Model.AttributeTemplate != null)
+                                {
+                                    @foreach (var attr in Model.AttributeTemplate)
+                                    {
+                                        <div class="input-group mb-2 animate__animated animate__fadeIn">
+                                            <input type="text" name="AttributeTemplate" class="form-control border-2 shadow-none" value="@attr" required />
+                                            <button type="button" class="btn btn-danger px-3" onclick="this.parentElement.remove()">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                }
+                            </div>
+
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2 rounded-pill shadow-sm" onclick="addAttributeField()">
+                                <i class="fa fa-plus me-1"></i> Yeni Özellik Ekle
+                            </button>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="d-flex justify-content-between">
+                            <a href="/Category/Index" class="btn btn-outline-secondary px-4 rounded-pill">
+                                <i class="fa fa-arrow-left me-1"></i> Vazgeç
+                            </a>
+                            <button type="submit" class="btn btn-primary px-5 rounded-pill shadow fw-bold">
+                                <i class="fa fa-save me-1"></i> Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const attributeContainer = document.getElementById('attributeContainer');
+
+        function addAttributeField() {
+            const div = document.createElement('div');
+            div.className = "input-group mb-2 animate__animated animate__fadeInLeft";
+
+            div.innerHTML = `
+                <input type="text" name="AttributeTemplate" class="form-control border-2 shadow-none" placeholder="Örn: RAM, Marka, Materyal" required />
+                <button type="button" class="btn btn-danger px-3" onclick="this.parentElement.remove()">
+                    <i class="fa fa-times"></i>
+                </button>
+            `;
+            attributeContainer.appendChild(div);
+        }
+    </script>
+}
+
+<style>
+    /* Odaklanma rengi uyumu */
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: none;
+    }
+
+    /* Buton hover efektleri */
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3) !important;
+    }
+</style>

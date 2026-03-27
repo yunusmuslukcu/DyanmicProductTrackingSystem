@@ -1,0 +1,128 @@
+﻿@model Entity.Concrete.Category
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header text-white" style="background-color: #212529;">
+                    <h5 class="mb-0 py-2"><i class="fa fa-plus-circle me-2"></i> Yeni Kategori Ekle</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="post" id="categoryForm">
+
+                        <input type="hidden" asp-for="CategoryName" id="hiddenCategoryName" />
+
+                        <div class="form-group mb-4">
+                            <label class="fw-bold mb-2 text-dark">Kategori Seçiniz</label>
+                            <select asp-for="CategoryIcon" class="form-select form-select-lg border-2 shadow-none" id="categorySelect">
+                                <option value="">--- Seçim Yapınız ---</option>
+                                <option value="fa fa-laptop" data-name="Elektronik">Elektronik</option>
+                                <option value="fa fa-plug" data-name="Beyaz Eşya">Beyaz Eşya</option>
+                                <option value="fa fa-mobile-alt" data-name="Telefon">Telefon</option>
+                                <option value="fa fa-couch" data-name="Mobilya">Mobilya</option>
+                                <option value="fa fa-futbol" data-name="Spor & Futbol">Spor & Futbol</option>
+                                <option value="fa fa-tshirt" data-name="Giyim">Giyim</option>
+                                <option value="fa fa-book" data-name="Kitap">Kitap</option>
+                                <option value="fa fa-tools" data-name="Donanım">Donanım</option>
+                                <option value="fa fa-utensils" data-name="Gıda & Mutfak">Gıda & Mutfak</option>
+                                <option value="fa fa-car" data-name="Otomobil">Otomobil</option>
+                                <option value="fa fa-heart" data-name="Kozmetik & Sağlık">Kozmetik & Sağlık</option>
+                                <option value="fa fa-plus" data-name="MANUEL">➕ Listede Yok (Yeni Ekle)</option>
+                            </select>
+                        </div>
+
+                        <div id="manualInputArea" style="display:none;" class="form-group mb-4 animate__animated animate__fadeIn">
+                            <label class="fw-bold mb-2 text-primary">Yeni Kategori Adını Yazın</label>
+                            <input type="text" id="manualCategoryName" class="form-control form-control-lg border-primary shadow-none" placeholder="Kategori ismini giriniz..." />
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="fw-bold mb-2 text-dark">
+                                <i class="fa fa-th-list me-1"></i> Özellik Şablonu Oluştur
+                            </label>
+                            <div id="attributeContainer">
+                            </div>
+                            @* BURASI: Rengi btn-outline-primary olarak güncelledim *@
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2 rounded-pill shadow-sm" onclick="addAttributeField()">
+                                <i class="fa fa-plus me-1"></i> Özellik Ekle (RAM, Renk vb.)
+                            </button>
+                            <small class="text-muted d-block mt-2">Bu alanlar, bu kategoriye ürün eklerken karşınıza çıkacaktır.</small>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="d-flex justify-content-between">
+                            <a href="/Category/Index" class="btn btn-outline-secondary px-4 rounded-pill">İptal</a>
+                            <button type="submit" class="btn btn-primary px-5 rounded-pill shadow">
+                                <i class="fa fa-save me-1"></i> Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const categorySelect = document.getElementById('categorySelect');
+        const manualInputArea = document.getElementById('manualInputArea');
+        const manualInput = document.getElementById('manualCategoryName');
+        const hiddenName = document.getElementById('hiddenCategoryName');
+        const attributeContainer = document.getElementById('attributeContainer');
+
+        categorySelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const dataName = selectedOption.getAttribute('data-name');
+
+            if (dataName === "MANUEL") {
+                manualInputArea.style.display = 'block';
+                manualInput.required = true;
+                hiddenName.value = "";
+            } else {
+                manualInputArea.style.display = 'none';
+                manualInput.required = false;
+                manualInput.value = "";
+                hiddenName.value = dataName;
+            }
+        });
+
+        manualInput.addEventListener('input', function() {
+            hiddenName.value = this.value;
+        });
+
+        function addAttributeField() {
+            const div = document.createElement('div');
+            div.className = "input-group mb-2 animate__animated animate__fadeInLeft";
+
+            div.innerHTML = `
+                <input type="text" name="AttributeTemplate" class="form-control" placeholder="Örn: İşlemci, RAM, Malzeme" required />
+                <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">
+                    <i class="fa fa-times"></i>
+                </button>
+            `;
+            attributeContainer.appendChild(div);
+        }
+    </script>
+}
+
+<style>
+    /* Odaklanma rengi uyumu */
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: none;
+    }
+
+    /* Kreatif Hover Efektleri */
+    .btn-primary:hover, .btn-outline-primary:hover {
+        transform: translateY(-2px);
+        transition: 0.3s;
+        box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2) !important;
+    }
+</style>
